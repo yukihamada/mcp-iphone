@@ -87,7 +87,12 @@ struct LLMSettingsView: View {
                 } header: {
                     Text("LLM Provider")
                 } footer: {
-                    Text("When rate limited or offline, automatically switch to local LLM if available.")
+                    if llmConfig.selectedProvider == .local {
+                        Text("Local LLM is currently under development. Please use Cloudflare (Groq) for now.")
+                            .foregroundColor(.orange)
+                    } else {
+                        Text("When rate limited or offline, automatically switch to local LLM if available.")
+                    }
                 }
                 
                 // Local Models
@@ -98,7 +103,7 @@ struct LLMSettingsView: View {
                 } header: {
                     Text("Local Models")
                 } footer: {
-                    Text("Download models to use offline. Each model is approximately 2.3GB.")
+                    Text("Download models for future local LLM support. Each model is approximately 2.3GB. Note: Local LLM functionality is under development.")
                 }
             }
             .navigationTitle("LLM Settings")

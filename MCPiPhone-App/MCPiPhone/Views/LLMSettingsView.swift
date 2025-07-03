@@ -87,7 +87,7 @@ struct LLMSettingsView: View {
                 } header: {
                     Text("LLM Provider")
                 } footer: {
-                    Text("When rate limited or offline, automatically switch to local LLM if available.")
+                    Text("When rate limited or offline, automatically switch to local LLM. Note: Local LLM integration is still under development and will show placeholder responses.")
                 }
                 
                 // Local Models

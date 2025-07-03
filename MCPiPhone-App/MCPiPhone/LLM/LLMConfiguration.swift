@@ -59,11 +59,15 @@ class LLMConfiguration: ObservableObject {
                 }
             case .notAvailable:
                 if autoFallbackToLocal && localProvider.isAvailable {
-                    // Notify about fallback
+                    // Notify about fallback with more context
                     NotificationCenter.default.post(
                         name: Notification.Name("LLMFallbackToLocal"),
                         object: nil,
-                        userInfo: ["fallback": true]
+                        userInfo: [
+                            "fallback": true,
+                            "reason": "Cloudflare provider not available",
+                            "suggestion": "Configure your API key in Settings or wait for local LLM implementation"
+                        ]
                     )
                     // Fallback to local LLM
                     return try await localProvider.complete(prompt: prompt, maxTokens: maxTokens)
@@ -97,11 +101,15 @@ class LLMConfiguration: ObservableObject {
                 }
             case .notAvailable:
                 if autoFallbackToLocal && localProvider.isAvailable {
-                    // Notify about fallback
+                    // Notify about fallback with more context
                     NotificationCenter.default.post(
                         name: Notification.Name("LLMFallbackToLocal"),
                         object: nil,
-                        userInfo: ["fallback": true]
+                        userInfo: [
+                            "fallback": true,
+                            "reason": "Cloudflare provider not available",
+                            "suggestion": "Configure your API key in Settings or wait for local LLM implementation"
+                        ]
                     )
                     // Fallback to local LLM
                     return try await localProvider.stream(prompt: prompt, maxTokens: maxTokens)

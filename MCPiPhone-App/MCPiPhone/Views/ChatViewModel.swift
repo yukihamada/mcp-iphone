@@ -16,7 +16,22 @@ class ChatViewModel: ObservableObject {
         // Add a welcome message
         messages.append(ChatMessage(
             role: .assistant,
-            content: "Hello! I'm your AI assistant. I can help you with various tasks and answer questions. How can I assist you today?"
+            content: """
+            Hello! I'm your AI assistant with MCP (Model Context Protocol) integration.
+            
+            I can help you with:
+            • General questions and conversations
+            • Analyzing output from MCP tools
+            • Understanding device information and system status
+            
+            Use the MCP Tools tab to:
+            • Get device info (battery, system, storage)
+            • Access photos and files
+            • Search the web and music
+            • And more!
+            
+            How can I assist you today?
+            """
         ))
         
         // Listen for rate limit updates
@@ -109,7 +124,22 @@ class ChatViewModel: ObservableObject {
     func clearMessages() {
         messages = [ChatMessage(
             role: .assistant,
-            content: "Hello! I'm your AI assistant. How can I help you today?"
+            content: """
+            Hello! I'm your AI assistant with MCP (Model Context Protocol) integration.
+            
+            I can help you with:
+            • General questions and conversations
+            • Analyzing output from MCP tools
+            • Understanding device information and system status
+            
+            Use the MCP Tools tab to:
+            • Get device info (battery, system, storage)
+            • Access photos and files
+            • Search the web and music
+            • And more!
+            
+            How can I assist you today?
+            """
         )]
         errorMessage = nil
     }

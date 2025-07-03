@@ -44,8 +44,9 @@ class LLMConfiguration: ObservableObject {
             switch error {
             case .rateLimitExceeded, .notAvailable:
                 if autoFallbackToLocal && localProvider.isAvailable {
-                    // Fallback to local LLM
-                    return try await localProvider.complete(prompt: prompt, maxTokens: maxTokens)
+                    // Fallback to local LLM with notification
+                    let fallbackResponse = try await localProvider.complete(prompt: prompt, maxTokens: maxTokens)
+                    return "📱 Auto-fallback to Local LLM (Cloudflare unavailable)\n\n" + fallbackResponse
                 }
             default:
                 break
@@ -61,8 +62,25 @@ class LLMConfiguration: ObservableObject {
             switch error {
             case .rateLimitExceeded, .notAvailable:
                 if autoFallbackToLocal && localProvider.isAvailable {
-                    // Fallback to local LLM
-                    return try await localProvider.stream(prompt: prompt, maxTokens: maxTokens)
+                    // Fallback to local LLM with notification
+                    return AsyncStream { continuation in
+                        Task {
+                            let notification = "📱 Auto-fallback to Local LLM (Cloudflare unavailable)\n\n"
+                            for char in notification {
+                                continuation.yield(String(char))
+                            }
+                            
+                            do {
+                                let fallbackStream = try await localProvider.stream(prompt: prompt, maxTokens: maxTokens)
+                                for await chunk in fallbackStream {
+                                    continuation.yield(chunk)
+                                }
+                            } catch {
+                                continuation.yield("\n\nError: \(error.localizedDescription)")
+                            }
+                            continuation.finish()
+                        }
+                    }
                 }
             default:
                 break

@@ -26,29 +26,57 @@ class LocalLLMProvider: LLMProvider {
             throw LLMError.modelNotFound
         }
         
-        // In a real implementation, this would:
-        // 1. Load the GGUF model using llama.cpp
-        // 2. Create a context with the prompt
-        // 3. Generate tokens up to maxTokens
-        // 4. Return the generated text
+        // Check if model is actually downloaded
+        let fileManager = FileManager.default
+        guard fileManager.fileExists(atPath: modelPath.path) else {
+            throw LLMError.modelNotFound
+        }
         
-        // For now, return a placeholder response
-        return "Local LLM response for: \(prompt)\n\nModel: \(modelId)\nPath: \(modelPath.path)"
+        // TODO: Implement actual llama.cpp integration here
+        // For now, return a more informative placeholder response
+        return """
+        ⚠️ Local LLM Integration Not Yet Implemented
+        
+        The local LLM feature is currently under development. The model "\(modelId)" has been selected and is available at:
+        \(modelPath.path)
+        
+        To use local LLMs:
+        1. Ensure you have downloaded a compatible GGUF model
+        2. The llama.cpp integration needs to be implemented
+        3. For now, please use the Cloudflare (Groq) provider in Settings
+        
+        Your prompt was: "\(prompt)"
+        """
     }
     
     func stream(prompt: String, maxTokens: Int = 1000) async throws -> AsyncStream<String> {
         guard let modelId = selectedModel,
-              let _ = ModelManager.shared.getModelPath(modelId) else {
+              let modelPath = ModelManager.shared.getModelPath(modelId) else {
+            throw LLMError.modelNotFound
+        }
+        
+        // Check if model is actually downloaded
+        let fileManager = FileManager.default
+        guard fileManager.fileExists(atPath: modelPath.path) else {
             throw LLMError.modelNotFound
         }
         
         return AsyncStream { continuation in
             Task {
-                // In a real implementation, this would stream tokens from llama.cpp
-                let response = "Streaming response from \(modelId)..."
+                // TODO: Implement actual llama.cpp streaming here
+                let response = """
+                ⚠️ Local LLM Integration Not Yet Implemented
+                
+                The local LLM streaming feature is under development.
+                Model: \(modelId)
+                
+                Please use the Cloudflare (Groq) provider in Settings for now.
+                """
+                
+                // Stream the response character by character for visual effect
                 for char in response {
                     continuation.yield(String(char))
-                    try? await Task.sleep(nanoseconds: 50_000_000) // 50ms delay
+                    try? await Task.sleep(nanoseconds: 10_000_000) // 10ms delay
                 }
                 continuation.finish()
             }

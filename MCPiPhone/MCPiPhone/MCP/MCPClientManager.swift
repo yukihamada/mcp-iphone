@@ -11,6 +11,7 @@ public class MCPClientManager: ObservableObject {
     @Published public private(set) var serverInfo: ServerInfo?
     @Published public private(set) var availableTools: [Tool] = []
     @Published public private(set) var connectionError: Error?
+    @Published public private(set) var connectionStatus: String = "Disconnected"
     
     private var client: Client?
     private var transport: Transport?
@@ -31,6 +32,8 @@ public class MCPClientManager: ObservableObject {
             "executable": .string(executable),
             "args": .array(args.map { .string($0) })
         ])
+        
+        connectionStatus = "Connecting..."
         
         // Create client
         let client = Client(
@@ -54,6 +57,7 @@ public class MCPClientManager: ObservableObject {
             self.isConnected = true
             self.serverInfo = result.serverInfo
             self.connectionError = nil
+            self.connectionStatus = "Connected ✅"
             
             logger.info("Connected to MCP server", metadata: [
                 "serverName": .string(result.serverInfo.name),
@@ -70,6 +74,7 @@ public class MCPClientManager: ObservableObject {
                 "error": .string(error.localizedDescription)
             ])
             self.connectionError = error
+            self.connectionStatus = "Connection Failed ❌"
             throw error
         }
     }
@@ -88,6 +93,7 @@ public class MCPClientManager: ObservableObject {
         self.serverInfo = nil
         self.availableTools = []
         self.connectionError = nil
+        self.connectionStatus = "Disconnected"
     }
     
     /// Load available tools from the connected server

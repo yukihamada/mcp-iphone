@@ -26,14 +26,19 @@ class LocalLLMProvider: LLMProvider {
             throw LLMError.modelNotFound
         }
         
-        // In a real implementation, this would:
-        // 1. Load the GGUF model using llama.cpp
-        // 2. Create a context with the prompt
-        // 3. Generate tokens up to maxTokens
-        // 4. Return the generated text
+        // Local LLM integration is under development
+        return """
+        ⚠️ Local LLM Integration Not Yet Implemented
         
-        // For now, return a placeholder response
-        return "Local LLM response for: \(prompt)\n\nModel: \(modelId)\nPath: \(modelPath.path)"
+        The local LLM feature is currently under development. 
+        Model "\(modelId)" is downloaded and ready at: \(modelPath.path)
+        
+        To use LLM features now:
+        1. Switch to Cloudflare Gateway in Settings > LLM
+        2. Or wait for the next update with local LLM support
+        
+        Your prompt was: \(prompt)
+        """
     }
     
     func stream(prompt: String, maxTokens: Int = 1000) async throws -> AsyncStream<String> {
@@ -44,11 +49,19 @@ class LocalLLMProvider: LLMProvider {
         
         return AsyncStream { continuation in
             Task {
-                // In a real implementation, this would stream tokens from llama.cpp
-                let response = "Streaming response from \(modelId)..."
+                // Local LLM integration is under development
+                let response = """
+                ⚠️ Local LLM Integration Not Yet Implemented
+                
+                The local LLM feature is currently under development.
+                Model "\(modelId)" is downloaded and ready.
+                
+                Please switch to Cloudflare Gateway in Settings > LLM to use LLM features now.
+                """
+                
                 for char in response {
                     continuation.yield(String(char))
-                    try? await Task.sleep(nanoseconds: 50_000_000) // 50ms delay
+                    try? await Task.sleep(nanoseconds: 20_000_000) // 20ms delay for smoother streaming
                 }
                 continuation.finish()
             }

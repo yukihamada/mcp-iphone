@@ -1002,16 +1002,19 @@ private class HTTPServer {
 
 struct ContentView: View {
     @State private var selectedTab = 1  // Default to Chat tab
+    @StateObject private var mcpManager = MCPClientManager()
     
     var body: some View {
         TabView(selection: $selectedTab) {
             ChatView()
+                .environmentObject(mcpManager)
                 .tabItem {
                     Label("Chat", systemImage: "message")
                 }
                 .tag(1)
             
             MCPToolsView()
+                .environmentObject(mcpManager)
                 .tabItem {
                     Label("MCP Tools", systemImage: "wrench.and.screwdriver")
                 }
@@ -1079,7 +1082,22 @@ class ChatViewModel: ObservableObject {
         // Add a welcome message
         messages.append(ChatMessage(
             role: .assistant,
-            content: "Hello! I'm your AI assistant. I can help you with various tasks and answer questions. How can I assist you today?"
+            content: """
+            Hello! I'm your AI assistant with MCP (Model Context Protocol) integration.
+            
+            I can help you with:
+            • General questions and conversations
+            • Analyzing output from MCP tools
+            • Understanding device information and system status
+            
+            You can also use the MCP Tools tab to:
+            • Get device information (battery, system, storage)
+            • Access photos and files
+            • Search the web and music
+            • And more!
+            
+            How can I assist you today?
+            """
         ))
         
         // Listen for rate limit updates
@@ -1162,7 +1180,12 @@ class ChatViewModel: ObservableObject {
                 switch llmError {
                 case .notAvailable:
                     if DevelopmentConfig.isDevelopment {
-                        errorMessage = "Connecting to Cloudflare Worker... Please ensure the Worker is deployed at: \(DevelopmentConfig.workerURL)"
+                        errorMessage = """
+                        LLM not available. Please check:
+                        1. Cloudflare Worker is deployed at: \(DevelopmentConfig.workerURL)
+                        2. Your API key is configured in Settings
+                        3. Or wait for local LLM implementation to complete
+                        """
                     } else {
                         errorMessage = "Please configure your API key in Settings"
                     }
@@ -1186,7 +1209,22 @@ class ChatViewModel: ObservableObject {
     func clearMessages() {
         messages = [ChatMessage(
             role: .assistant,
-            content: "Hello! I'm your AI assistant. How can I help you today?"
+            content: """
+            Hello! I'm your AI assistant with MCP (Model Context Protocol) integration.
+            
+            I can help you with:
+            • General questions and conversations
+            • Analyzing output from MCP tools
+            • Understanding device information and system status
+            
+            You can also use the MCP Tools tab to:
+            • Get device information (battery, system, storage)
+            • Access photos and files
+            • Search the web and music
+            • And more!
+            
+            How can I assist you today?
+            """
         )]
         errorMessage = nil
     }
@@ -1234,6 +1272,7 @@ class ChatViewModel: ObservableObject {
 
 struct ChatView: View {
     @StateObject private var viewModel = ChatViewModel()
+    @EnvironmentObject var mcpManager: MCPClientManager
     @State private var messageText = ""
     @FocusState private var isMessageFieldFocused: Bool
     
@@ -1316,6 +1355,16 @@ struct ChatView: View {
             .navigationTitle("Chat")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    HStack(spacing: 4) {
+                        Image(systemName: mcpManager.isConnected ? "checkmark.circle.fill" : "circle")
+                            .foregroundColor(mcpManager.isConnected ? .green : .gray)
+                            .font(.caption)
+                        Text("MCP")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
                         viewModel.clearMessages()
@@ -1382,7 +1431,7 @@ struct MessageBubble: View {
 // MARK: - MCP Tools View
 
 struct MCPToolsView: View {
-    @StateObject private var mcpManager = MCPClientManager()
+    @EnvironmentObject var mcpManager: MCPClientManager
     @State private var serverPath = "demo"  // Default to demo server
     @State private var selectedTool: Tool?
     @State private var toolResponse = ""
@@ -1461,6 +1510,13 @@ struct MCPToolsView: View {
                 TextField("Server executable path", text: $serverPath)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .disabled(mcpManager.isConnected)
+                
+                if mcpManager.isConnected {
+                    // Connection status indicator
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.green)
+                        .font(.title2)
+                }
                 
                 Button(action: toggleConnection) {
                     if isConnecting {
@@ -1612,15 +1668,33 @@ struct MCPToolsView: View {
     }
     
     private func autoConnectToMCPServer() {
+        guard DevelopmentConfig.autoConnectMCP else { return }
+        
         isConnecting = true
         Task {
             do {
+                // Add a small delay to ensure UI is ready
+                try await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
+                
                 try await mcpManager.connectToServer(executable: serverPath)
+                
+                // Show success message
+                await MainActor.run {
+                    toolResponse = "MCP Server connected successfully! Available tools: \(mcpManager.availableTools.count)"
+                }
             } catch {
-                // Silently fail auto-connection - user can manually retry
-                print("Auto-connection failed: \(error)")
+                // Log the error but don't show alert for auto-connection
+                print("[MCP Auto-connect] Failed: \(error.localizedDescription)")
+                
+                // Show a subtle error message in the response area
+                await MainActor.run {
+                    toolResponse = "MCP Server auto-connection failed. You can manually connect using the Connect button."
+                }
             }
-            isConnecting = false
+            
+            await MainActor.run {
+                isConnecting = false
+            }
         }
     }
 }
