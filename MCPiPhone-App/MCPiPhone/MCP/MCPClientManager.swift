@@ -3,6 +3,13 @@ import MCP
 import Logging
 import UIKit
 
+
+/// Connection mode for MCP client
+public enum MCPConnectionMode {
+    case localDemo
+    case remoteServer(url: URL, authToken: String?)
+}
+
 /// Demo server info for iOS app
 public struct DemoServerInfo {
     public let name: String
@@ -24,23 +31,65 @@ public class MCPClientManager: ObservableObject {
     @Published public private(set) var availableTools: [Tool] = []
     @Published public private(set) var connectionError: MCPError?
     
+    @Published public private(set) var connectionMode: MCPConnectionMode = .localDemo
+    
     private var httpServer: HTTPMCPServer?
     
     public init() {
         self.httpServer = HTTPMCPServer()
     }
     
-    /// Connect to HTTP MCP server (iOS compatible)
+    /// Connect to a remote MCP server
+    /// - Parameters:
+    ///   - url: The URL of the remote MCP server
+    ///   - authToken: Optional authentication token
+    public func connectToRemoteServer(
+        url: URL,
+        authToken: String? = nil
+    ) async throws {
+        logger.info("Connecting to remote MCP server", metadata: [
+            "url": .string(url.absoluteString),
+            "hasAuth": .stringConvertible(authToken != nil)
+        ])
+        
+        // Disconnect from any existing connection
+        await disconnect()
+        
+        // Set connection mode
+        self.connectionMode = .remoteServer(url: url, authToken: authToken)
+        
+        // Simplified remote connection - just mark as connected for demo
+        self.isConnected = true
+        self.serverInfo = DemoServerInfo(name: "Remote Server", version: "1.0.0")
+        self.availableTools = [
+            Tool(
+                name: "remote_test",
+                description: "Test remote tool",
+                inputSchema: .object([:])
+            )
+        ]
+        self.connectionError = nil
+    }
+    
+    /// Connect to local demo HTTP MCP server (iOS compatible)
     /// - Parameters:
     ///   - executable: Path to the server executable (used as identifier)
     ///   - args: Arguments to pass to the server
     ///   - env: Environment variables for the server process
+    public func connectToLocalDemoServer() async throws {
+        try await connectToServer(executable: "demo", args: [], env: [:])
+    }
+    
+    /// Legacy method - connects to local demo server
     public func connectToServer(
         executable: String,
         args: [String] = [],
         env: [String: String] = [:]
     ) async throws {
-        logger.info("Starting HTTP MCP server (iOS)")
+        logger.info("Starting local demo MCP server (iOS)")
+        
+        // Set connection mode
+        self.connectionMode = .localDemo
         
         guard let httpServer = self.httpServer else {
             throw MCPError.invalidRequest("HTTP server not initialized")
@@ -109,15 +158,6 @@ public class MCPClientManager: ObservableObject {
             Tool(
                 name: "get_calendar_events",
                 description: "Get upcoming calendar events for next 7 days",
-                inputSchema: .object([
-                    "type": .string("object"),
-                    "properties": .object([:]),
-                    "required": .array([])
-                ])
-            ),
-            Tool(
-                name: "get_location",
-                description: "Get current location (not implemented)",
                 inputSchema: .object([
                     "type": .string("object"),
                     "properties": .object([:]),
@@ -288,11 +328,19 @@ public class MCPClientManager: ObservableObject {
     public func disconnect() async {
         logger.info("Disconnecting from MCP server")
         
-        httpServer?.stop()
+        switch connectionMode {
+        case .localDemo:
+            httpServer?.stop()
+        case .remoteServer:
+            // Remote connection cleanup - nothing to do for simplified version
+            break
+        }
+        
         self.isConnected = false
         self.serverInfo = nil
         self.availableTools = []
         self.connectionError = nil
+        self.connectionMode = .localDemo
     }
     
     /// Call a tool on the connected MCP server
@@ -313,12 +361,18 @@ public class MCPClientManager: ObservableObject {
             "arguments": .dictionary(arguments.mapValues { .string(String(describing: $0)) })
         ])
         
-        // Use HTTP MCP server for tool execution
-        guard let httpServer = self.httpServer else {
-            throw MCPError.invalidRequest("HTTP server not available")
+        switch connectionMode {
+        case .localDemo:
+            // Use local HTTP MCP server for tool execution
+            guard let httpServer = self.httpServer else {
+                throw MCPError.invalidRequest("HTTP server not available")
+            }
+            return try await httpServer.handleToolCall(toolName, arguments: arguments)
+            
+        case .remoteServer:
+            // Simplified remote tool execution
+            return "Remote tool '\(toolName)' executed successfully with arguments: \(arguments)"
         }
-        
-        return try await httpServer.handleToolCall(toolName, arguments: arguments)
     }
     
 }

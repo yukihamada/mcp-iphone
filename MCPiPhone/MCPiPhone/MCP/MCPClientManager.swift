@@ -2,6 +2,12 @@ import Foundation
 import MCP
 import Logging
 
+/// Connection type for MCP servers
+public enum MCPConnectionType {
+    case local(executable: String, args: [String], env: [String: String])
+    case remote(url: URL, authToken: String?)
+}
+
 /// Manager class for handling MCP client connections and operations
 @MainActor
 public class MCPClientManager: ObservableObject {
@@ -12,28 +18,66 @@ public class MCPClientManager: ObservableObject {
     @Published public private(set) var availableTools: [Tool] = []
     @Published public private(set) var connectionError: Error?
     @Published public private(set) var connectionStatus: String = "Disconnected"
+    @Published public private(set) var connectionType: MCPConnectionType?
     
     private var client: Client?
     private var transport: Transport?
     
     public init() {}
     
-    /// Connect to an MCP server using stdio transport
+    /// Connect to a local MCP server using stdio transport
     /// - Parameters:
     ///   - executable: Path to the server executable
     ///   - args: Arguments to pass to the server
     ///   - env: Environment variables for the server process
+    public func connectToLocalServer(
+        executable: String,
+        args: [String] = [],
+        env: [String: String] = [:]
+    ) async throws {
+        let connectionType = MCPConnectionType.local(executable: executable, args: args, env: env)
+        try await connect(connectionType: connectionType)
+    }
+    
+    /// Connect to a remote MCP server using HTTP transport
+    /// - Parameters:
+    ///   - url: The URL of the remote MCP server
+    ///   - authToken: Optional authentication token
+    public func connectToRemoteServer(
+        url: URL,
+        authToken: String? = nil
+    ) async throws {
+        let connectionType = MCPConnectionType.remote(url: url, authToken: authToken)
+        try await connect(connectionType: connectionType)
+    }
+    
+    /// Legacy method for backward compatibility
     public func connectToServer(
         executable: String,
         args: [String] = [],
         env: [String: String] = [:]
     ) async throws {
-        logger.info("Connecting to MCP server", metadata: [
-            "executable": .string(executable),
-            "args": .array(args.map { .string($0) })
-        ])
-        
+        try await connectToLocalServer(executable: executable, args: args, env: env)
+    }
+    
+    /// Internal method to handle connection based on type
+    private func connect(connectionType: MCPConnectionType) async throws {
+        self.connectionType = connectionType
         connectionStatus = "Connecting..."
+        
+        // Log connection attempt
+        switch connectionType {
+        case .local(let executable, let args, _):
+            logger.info("Connecting to local MCP server", metadata: [
+                "executable": .string(executable),
+                "args": .array(args.map { .string($0) })
+            ])
+        case .remote(let url, let hasAuth):
+            logger.info("Connecting to remote MCP server", metadata: [
+                "url": .string(url.absoluteString),
+                "hasAuth": .stringConvertible(hasAuth != nil)
+            ])
+        }
         
         // Create client
         let client = Client(
@@ -41,12 +85,22 @@ public class MCPClientManager: ObservableObject {
             version: "1.0.0"
         )
         
-        // Create stdio transport
-        let transport = Transport.stdioProcess(
-            executable: executable,
-            args: args,
-            env: env
-        )
+        // Create appropriate transport based on connection type
+        let transport: Transport
+        switch connectionType {
+        case .local(let executable, let args, let env):
+            transport = Transport.stdioProcess(
+                executable: executable,
+                args: args,
+                env: env
+            )
+        case .remote(let url, let authToken):
+            // Note: This requires HTTPTransport to be integrated into the MCP SDK
+            // For now, we'll throw an error indicating it's not yet supported
+            throw MCPError.connectionError("Remote MCP servers are not yet supported. HTTPTransport needs to be integrated into the MCP SDK.")
+            // Once HTTPTransport is integrated into MCP SDK:
+            // transport = Transport.http(url: url, authToken: authToken)
+        }
         
         do {
             // Connect to server
@@ -94,6 +148,7 @@ public class MCPClientManager: ObservableObject {
         self.availableTools = []
         self.connectionError = nil
         self.connectionStatus = "Disconnected"
+        self.connectionType = nil
     }
     
     /// Load available tools from the connected server

@@ -30,8 +30,7 @@ struct DevelopmentConfig {
     static let demoAPIKey = "demo-api-key-" + UUID().uuidString
 }
 
-// MARK: - HTTPMCPServer (temporary inclusion for build issues)
-
+/// MCP Error definitions
 public enum MCPError: LocalizedError {
     case invalidParams(String)
     case invalidRequest(String)
@@ -49,8 +48,8 @@ public enum MCPError: LocalizedError {
     }
 }
 
-/// HTTP-based MCP server for iOS compatibility
-class HTTPMCPServer {
+/// HTTP-based MCP server for iOS compatibility (ContentView version)
+class ContentViewHTTPMCPServer {
     private let port: Int
     private var httpServer: HTTPServer?
     
@@ -89,8 +88,6 @@ class HTTPMCPServer {
             return try await getContactsCount()
         case "get_calendar_events":
             return try await getCalendarEvents()
-        case "get_location":
-            return try await getLocation()
         case "get_network_info":
             return try await getNetworkInfo()
         case "get_storage_info":
@@ -280,9 +277,6 @@ class HTTPMCPServer {
         continuation.resume(returning: result)
     }
     
-    private func getLocation() async throws -> String {
-        return "Location services would require additional setup and permissions. Current status: Not implemented."
-    }
     
     private func getNetworkInfo() async throws -> String {
         var info = "Network Information:\n"

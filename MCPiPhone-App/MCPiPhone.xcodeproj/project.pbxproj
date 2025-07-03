@@ -19,6 +19,10 @@
 		1D1D1D1D1D1D1D1D1D1D1D26 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2D2D2D2D2D2D2D2D2D2D36 /* Model.swift */; };
 		1D1D1D1D1D1D1D1D1D1D1D27 /* ModelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2D2D2D2D2D2D2D2D2D2D37 /* ModelManager.swift */; };
 		1D1D1D1D1D1D1D1D1D1D1D28 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2D2D2D2D2D2D2D2D2D2D40 /* KeychainService.swift */; };
+		1D1D1D1D1D1D1D1D1D1D1D29 /* RemoteMCPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2D2D2D2D2D2D2D2D2D2D41 /* RemoteMCPClient.swift */; };
+		1D1D1D1D1D1D1D1D1D1D1D2A /* HTTPMCPServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2D2D2D2D2D2D2D2D2D2D42 /* HTTPMCPServer.swift */; };
+		1D1D1D1D1D1D1D1D1D1D1D2B /* HTTPTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2D2D2D2D2D2D2D2D2D2D43 /* HTTPTransport.swift */; };
+		1D1D1D1D1D1D1D1D1D1D1D2C /* MCPLLMIntegration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2D2D2D2D2D2D2D2D2D2D44 /* MCPLLMIntegration.swift */; };
 		B60421552E16A29F00C51C53 /* MCP in Frameworks */ = {isa = PBXBuildFile; productRef = DD1D1D1D1D1D1D1D1D1D1D1D /* MCP */; };
 		B60421562E16A29F00C51C53 /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = DD1D1D1D1D1D1D1D1D1D1D1E /* Logging */; };
 /* End PBXBuildFile section */
@@ -39,6 +43,10 @@
 		2D2D2D2D2D2D2D2D2D2D2D38 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2D2D2D2D2D2D2D2D2D2D2D39 /* MCPiPhone.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MCPiPhone.entitlements; sourceTree = "<group>"; };
 		2D2D2D2D2D2D2D2D2D2D2D40 /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
+		2D2D2D2D2D2D2D2D2D2D2D41 /* RemoteMCPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteMCPClient.swift; sourceTree = "<group>"; };
+		2D2D2D2D2D2D2D2D2D2D2D42 /* HTTPMCPServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPMCPServer.swift; sourceTree = "<group>"; };
+		2D2D2D2D2D2D2D2D2D2D2D43 /* HTTPTransport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPTransport.swift; sourceTree = "<group>"; };
+		2D2D2D2D2D2D2D2D2D2D2D44 /* MCPLLMIntegration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MCPLLMIntegration.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,6 +105,10 @@
 			isa = PBXGroup;
 			children = (
 				2D2D2D2D2D2D2D2D2D2D2D2F /* MCPClientManager.swift */,
+				2D2D2D2D2D2D2D2D2D2D2D41 /* RemoteMCPClient.swift */,
+				2D2D2D2D2D2D2D2D2D2D2D42 /* HTTPMCPServer.swift */,
+				2D2D2D2D2D2D2D2D2D2D2D43 /* HTTPTransport.swift */,
+				2D2D2D2D2D2D2D2D2D2D2D44 /* MCPLLMIntegration.swift */,
 			);
 			path = MCP;
 			sourceTree = "<group>";
@@ -227,6 +239,10 @@
 				1D1D1D1D1D1D1D1D1D1D1D26 /* Model.swift in Sources */,
 				1D1D1D1D1D1D1D1D1D1D1D27 /* ModelManager.swift in Sources */,
 				1D1D1D1D1D1D1D1D1D1D1D28 /* KeychainService.swift in Sources */,
+				1D1D1D1D1D1D1D1D1D1D1D29 /* RemoteMCPClient.swift in Sources */,
+				1D1D1D1D1D1D1D1D1D1D1D2A /* HTTPMCPServer.swift in Sources */,
+				1D1D1D1D1D1D1D1D1D1D1D2B /* HTTPTransport.swift in Sources */,
+				1D1D1D1D1D1D1D1D1D1D1D2C /* MCPLLMIntegration.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

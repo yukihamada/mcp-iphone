@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-enum MCPError: LocalizedError {
+enum HTTPMCPServerError: LocalizedError {
     case invalidParams(String)
     
     var errorDescription: String? {

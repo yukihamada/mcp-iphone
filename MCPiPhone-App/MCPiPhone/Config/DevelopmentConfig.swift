@@ -1,28 +1,22 @@
 import Foundation
 
-/// Development configuration - DO NOT USE IN PRODUCTION
+/// Legacy development configuration - Redirects to AppConfiguration
+/// This file is kept for backward compatibility
+/// @available(*, deprecated, message: "Use AppConfiguration instead")
 struct DevelopmentConfig {
     /// Cloudflare Worker URL
-    static let workerURL = "https://mcp-iphone-gateway.workers.dev"
+    static let workerURL = AppConfiguration.workerURL
     
     /// Development-only flag
-    static let isDevelopment = true
+    static let isDevelopment = AppConfiguration.isDevelopment
     
     /// Auto-create anonymous account on first launch
-    static let autoCreateAccount = true
+    static let autoCreateAccount = AppConfiguration.autoCreateAccount
     
     /// Pre-configured Groq API key for development
-    /// WARNING: This should only be used for development/demo purposes
-    /// In production, users should generate their own API keys
-    static let demoGroqAPIKey = "YOUR_GROQ_API_KEY_HERE"
+    /// WARNING: This returns a placeholder value. Configure via environment variables instead
+    static let demoGroqAPIKey = AppConfiguration.demoAPIKey ?? "demo-api-key-not-configured"
     
     /// Enable automatic MCP connection
-    static let autoConnectMCP = true
+    static let autoConnectMCP = AppConfiguration.autoConnectMCP
 }
-
-// MARK: - Production Warning
-#if DEBUG
-// Development configuration is enabled
-#else
-#warning("Development configuration should not be used in production builds")
-#endif

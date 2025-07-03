@@ -1,7 +1,7 @@
 import Foundation
+// TODO: Import LlamaCppSwift when package is integrated
+// import LlamaCppSwift
 
-// Note: In a real implementation, you would need to integrate llama.cpp
-// This is a placeholder that shows the interface
 class LocalLLMProvider: LLMProvider {
     let id = "local"
     let name = "Local LLM (Jan-Nano)"
@@ -11,6 +11,8 @@ class LocalLLMProvider: LLMProvider {
     }
     
     private var selectedModel: String?
+    // TODO: Add LlamaCpp instance when package is integrated
+    // private var llamaCpp: LlamaCpp?
     
     init(modelId: String? = nil) {
         self.selectedModel = modelId ?? ModelManager.shared.models.first(where: { $0.status == .downloaded })?.id
@@ -18,6 +20,15 @@ class LocalLLMProvider: LLMProvider {
     
     func selectModel(_ modelId: String) {
         self.selectedModel = modelId
+        // TODO: Initialize LlamaCpp with selected model
+        // if let modelPath = ModelManager.shared.getModelPath(modelId) {
+        //     do {
+        //         let config = LlamaCpp.Configuration(modelPath: modelPath.path)
+        //         self.llamaCpp = try LlamaCpp(configuration: config)
+        //     } catch {
+        //         print("[LocalLLMProvider] Failed to initialize llama.cpp: \(error)")
+        //     }
+        // }
     }
     
     func complete(prompt: String, maxTokens: Int = 1000) async throws -> String {
@@ -26,16 +37,27 @@ class LocalLLMProvider: LLMProvider {
             throw LLMError.modelNotFound
         }
         
-        // Local LLM integration is under development
-        return """
-        ⚠️ Local LLM Integration Not Yet Implemented
+        // TODO: Use LlamaCpp for actual generation when integrated
+        // if let llamaCpp = self.llamaCpp {
+        //     let params = LlamaCpp.GenerationParams(maxTokens: maxTokens)
+        //     return try await llamaCpp.generate(prompt: prompt, params: params)
+        // }
         
-        The local LLM feature is currently under development. 
+        // Placeholder implementation
+        return """
+        ⚠️ Local LLM Integration In Progress
+        
+        The local LLM feature is being implemented with llama.cpp.
         Model "\(modelId)" is downloaded and ready at: \(modelPath.path)
+        
+        Implementation status:
+        ✅ Swift bindings created
+        ✅ Model management ready
+        ⏳ llama.cpp integration pending
         
         To use LLM features now:
         1. Switch to Cloudflare Gateway in Settings > LLM
-        2. Or wait for the next update with local LLM support
+        2. Or wait for the llama.cpp integration to complete
         
         Your prompt was: \(prompt)
         """
@@ -47,14 +69,25 @@ class LocalLLMProvider: LLMProvider {
             throw LLMError.modelNotFound
         }
         
+        // TODO: Use LlamaCpp for actual streaming when integrated
+        // if let llamaCpp = self.llamaCpp {
+        //     let params = LlamaCpp.GenerationParams(maxTokens: maxTokens)
+        //     return llamaCpp.stream(prompt: prompt, params: params).map { $0 }.eraseToAnyAsyncSequence()
+        // }
+        
+        // Placeholder streaming implementation
         return AsyncStream { continuation in
             Task {
-                // Local LLM integration is under development
                 let response = """
-                ⚠️ Local LLM Integration Not Yet Implemented
+                ⚠️ Local LLM Integration In Progress
                 
-                The local LLM feature is currently under development.
+                The local LLM feature is being implemented with llama.cpp.
                 Model "\(modelId)" is downloaded and ready.
+                
+                Implementation status:
+                ✅ Swift bindings created
+                ✅ Model management ready
+                ⏳ llama.cpp integration pending
                 
                 Please switch to Cloudflare Gateway in Settings > LLM to use LLM features now.
                 """

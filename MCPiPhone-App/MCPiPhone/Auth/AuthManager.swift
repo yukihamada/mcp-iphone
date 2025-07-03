@@ -99,9 +99,9 @@ class AuthManager: ObservableObject {
                 self.rateLimit = authResponse.rateLimit
                 self.isAuthenticated = true
                 
-                try? keychain.setString(authResponse.apiKey, forKey: "apiKey")
-                try? keychain.setString(authResponse.token, forKey: "token")
-                try? keychain.setString(authResponse.tier, forKey: "userTier")
+                _ = keychain.setString(authResponse.apiKey, forKey: "apiKey")
+                _ = keychain.setString(authResponse.token, forKey: "token")
+                _ = keychain.setString(authResponse.tier, forKey: "userTier")
             }
         } catch {
             print("[AuthManager] Failed to create anonymous account: \(error)")
@@ -131,9 +131,9 @@ class AuthManager: ObservableObject {
             self.rateLimit = authResponse.rateLimit
             self.isAuthenticated = true
             
-            try? keychain.setString(authResponse.apiKey, forKey: "apiKey")
-            try? keychain.setString(authResponse.token, forKey: "token")
-            try? keychain.setString(authResponse.tier, forKey: "userTier")
+            _ = keychain.setString(authResponse.apiKey, forKey: "apiKey")
+            _ = keychain.setString(authResponse.token, forKey: "token")
+            _ = keychain.setString(authResponse.tier, forKey: "userTier")
         }
     }
     
@@ -143,9 +143,9 @@ class AuthManager: ObservableObject {
         userTier = .anonymous
         rateLimit = nil
         
-        try? keychain.deleteItem(forKey: "apiKey")
-        try? keychain.deleteItem(forKey: "token")
-        try? keychain.deleteItem(forKey: "userTier")
+        _ = keychain.deleteItem(forKey: "apiKey")
+        _ = keychain.deleteItem(forKey: "token")
+        _ = keychain.deleteItem(forKey: "userTier")
     }
 }
 
