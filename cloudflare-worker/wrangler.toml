@@ -1,0 +1,26 @@
+name = "mcp-iphone-gateway"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+[env.production]
+vars = { ENVIRONMENT = "production" }
+
+# KV and D1 setup will be done later
+# [[kv_namespaces]]
+# binding = "USERS"
+# id = "YOUR_KV_NAMESPACE_ID"
+# preview_id = "YOUR_KV_PREVIEW_ID"
+
+# [[kv_namespaces]]
+# binding = "RATE_LIMITS"
+# id = "YOUR_RATE_LIMITS_KV_ID"
+# preview_id = "YOUR_RATE_LIMITS_PREVIEW_ID"
+
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "mcp-iphone"
+# database_id = "YOUR_D1_DATABASE_ID"
+
+[vars]
+# Groq API key will be set via wrangler secret
+# wrangler secret put GROQ_API_KEY

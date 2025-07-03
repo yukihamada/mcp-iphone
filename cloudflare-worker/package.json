@@ -1,0 +1,21 @@
+{
+  "name": "mcp-iphone-worker",
+  "version": "1.0.0",
+  "description": "Cloudflare Worker API Gateway for MCP iPhone",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240117.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.0",
+    "wrangler": "^3.22.4"
+  },
+  "dependencies": {
+    "@tsndr/cloudflare-worker-jwt": "^2.5.1",
+    "nanoid": "^5.0.4"
+  }
+}
