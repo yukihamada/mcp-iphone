@@ -1,3 +1,11 @@
+> ## ⚠️ This project has evolved into [Elio Chat](https://github.com/yukihamada/elio)
+> 
+> Elio Chat is a full-featured local AI agent for iOS with MCP integration, 30+ models, vision AI, and voice input.
+> 
+> **Download**: [App Store](https://apps.apple.com/jp/app/elio-chat/id6757635481) | **Website**: [elio.love](https://elio.love)
+>
+> ---
+
 # MCP iOS SDK Implementation with LLM Integration
 
 This project demonstrates how to integrate the Swift MCP (Model Context Protocol) SDK into an iOS application with LLM support through Cloudflare Workers and local models, including both client and server implementations.
